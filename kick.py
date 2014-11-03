@@ -5,7 +5,6 @@ import signal
 import re
 import os
 import sys
-
 # first we get the list of active users in ttys 
 # then we let the user decide which user to kick out
 
