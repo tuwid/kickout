@@ -44,7 +44,10 @@ if (int(choice) > 0 and int(choice) < nr):
 		if myLoggedUsers[choice] in line:
 			#print line
 			pid = int(re.match( r"^(\S*)\s*(\S*)", line,re.I).group(2))
-			os.kill(pid, signal.SIGKILL)
+			try:
+				os.kill(pid, signal.SIGKILL)
+			except:
+				print ""
 			print "tty " + myLoggedUsers[choice] + " killed"
 else:
 	print "Entry out of id range"
