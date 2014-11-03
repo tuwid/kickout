@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import subprocess
+import argparse
 import signal
 import re
 import os
@@ -13,43 +14,61 @@ import sys
 
 # this program is free as in free air 
 
-if not os.geteuid() == 0:
-    sys.exit('Script must be run as root')
-
-who_output = subprocess.check_output("who").split("\n")
-
-myList = []
-myLoggedUsers = {}
-nr = 1;
-
-for line in who_output:
-	#print line
-	list = re.match( r"(\S*)\s*(\S*)\s*(\S*)\s*(\S*)\s*(\S*)", line,re.I)
-	if list and list.group(5):
-	   print nr, " - ",list.group(1), list.group(2), list.group(3),list.group(4),list.group(5)
-	   myLoggedUsers[nr] = list.group(2)
-	   nr+=1
+def check_if_root():
+	if not os.geteuid() == 0:
+		sys.exit('Script must be run as root')
 	else:
-	   print ""
+		print "Root check OK"
 
-if (len (myLoggedUsers) <= 0):
-	sys.exit("No one logged in the system.. Exiting ")
+def logged_users():
+	who_output = subprocess.check_output("who").split("\n")
+	myLoggedUsers = {}
 
-try:
-	choice = int(raw_input("Please enter id of the user to kick : "))
-except:
-	sys.exit("\n Something wrong was typed")
+	for line in who_output:
+		#print line
+		myList = re.match( r"(\S*)\s*(\S*)\s*(\S*)\s*(\S*)\s*(\S*)", line,re.I)
+		if myList and myList.group(5):
+			print myList.group(1), myList.group(2), myList.group(3),myList.group(4),myList.group(5)
+			myLoggedUsers[myList.group(2)] = myList.group(1) 
+		else:
+			print ""
+	if (len (myLoggedUsers) <= 0):
+		sys.exit("No one logged in the system.. Exiting ")
+	return myLoggedUsers
 
-if (int(choice) > 0 and int(choice) < nr):
-	out = subprocess.check_output(['ps', 'aux'])
-	for line in out.splitlines():
-		if myLoggedUsers[choice] in line:
-			#print line
-			pid = int(re.match( r"^(\S*)\s*(\S*)", line,re.I).group(2))
-			try:
-				os.kill(pid, signal.SIGKILL)
-			except:
-				print ""
-			print "tty " + myLoggedUsers[choice] + " killed"
-else:
-	print "Entry out of id range"
+def kill_tty(tty):
+		#sys.exit("\n Something wrong was typed")
+		if tty in logged_users():
+			print "tty found"
+		else:
+			print "tty not found"
+			sys.exit(1)
+
+		out = subprocess.check_output(['ps', 'aux'])
+		for line in out.splitlines():
+			if tty in line:
+				#print line
+				pid = int(re.match( r"^(\S*)\s*(\S*)", line,re.I).group(2))
+				try:
+					os.kill(pid, signal.SIGKILL)
+				except:
+					print ""
+				print "tty " + tty + " killed"
+		else:
+			print ""
+			#print "tty not found running"
+
+
+parser = argparse.ArgumentParser(description='''script to kick/logout users out of a linux system ./kick.py -k pts/6''')
+parser.add_argument("-l", '--list', help='list users and ttys', action="store_true")
+parser.add_argument("-k", '--kill', metavar="tty", type=str, help="kill user in specified tty")
+args = parser.parse_args()
+
+#print args.kill
+if args.list:
+	logged_users()
+elif args.kill:
+	kill_tty(args.kill)
+
+
+
