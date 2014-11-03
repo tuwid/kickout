@@ -65,9 +65,13 @@ parser.add_argument("-k", '--kill', metavar="tty", type=str, help="kill user in 
 args = parser.parse_args()
 
 #print args.kill
+if (args.kill == None and args.list == False):
+	parser.print_help()
+
 if args.list:
 	logged_users()
 elif args.kill:
+	check_if_root()
 	kill_tty(args.kill)
 
 
