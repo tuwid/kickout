@@ -26,8 +26,7 @@ Meanwhile on the terminal <br>
 tuwid@valhalla:~$ ssh root@192.168.1.200 <br>
 root@192.168.1.200's password:  <br>
 Welcome to elementary OS Luna (GNU/Linux 3.2.0-69-generic x86_64) <br>
- 
- * Website:  http://elementaryos.org <br>
+
 Last login: Sun Nov  2 18:13:57 2014 from localhost <br>
 root@valhalla:~# Connection to 192.168.1.200 closed by remote host. <br>
 Connection to 192.168.1.200 closed. <br>
