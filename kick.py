@@ -5,11 +5,14 @@ import signal
 import re
 import os
 import sys
+
 # first we get the list of active users in ttys 
 # then we let the user decide which user to kick out
 
 # this is my first python script that i wrote on my own, 
 # i'm a perl programmer and just want to learn python better 
+
+# this program is free as in free air 
 
 if not os.geteuid() == 0:
     sys.exit('Script must be run as root')
